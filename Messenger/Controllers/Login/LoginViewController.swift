@@ -76,6 +76,12 @@ class LoginViewController: UIViewController {
                                                             style: .done,
                                                             target: self,
                                                             action: #selector(didTapRegister))
+        loginButton.addTarget(self,
+                              action: #selector(loginButtonTapped),
+                              for: .touchUpInside)
+        
+        emailField.delegate = self
+        passwordField.delegate = self
         
         //Add subviews
         view.addSubview(scrollView)
@@ -109,10 +115,47 @@ class LoginViewController: UIViewController {
                                   height: 52)
     }
     
+    @objc private func loginButtonTapped(){
+        
+        emailField.resignFirstResponder()
+        passwordField.resignFirstResponder()
+        
+        guard let email = emailField.text, let password = passwordField.text,
+              !email.isEmpty, !password.isEmpty, password.count >= 6 else{
+            alertUserLoginError()
+            return
+        }
+        
+        //Firebase Log In
+    }
+    
+    func alertUserLoginError(){
+        let alert = UIAlertController(title: "Something wrong",
+                                      message:"Please enter all information",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title:"Dismiss",
+                                      style: .cancel, handler: nil))
+        present(alert, animated: true)
+    }
     
     @objc private func didTapRegister() {
         let vc = RegisterViewController()
         vc.title = "Create Account"
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+
+extension LoginViewController: UITextFieldDelegate{
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        if textField == emailField{
+            passwordField.becomeFirstResponder()
+        }else if textField == passwordField{
+            loginButtonTapped()
+        }
+        
+        return true
     }
 }
