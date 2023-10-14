@@ -19,6 +19,9 @@ class RegisterViewController: UIViewController {
         imageView.image = UIImage(systemName: "person")
         imageView.tintColor = .gray
         imageView.contentMode = .scaleAspectFit
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 2
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
         return imageView
     }()
     
@@ -35,7 +38,7 @@ class RegisterViewController: UIViewController {
         field.leftView = UIView(frame: CGRect(x:0, y:0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
-        
+        field.attributedPlaceholder = NSAttributedString(string: "First name...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         return field
     }()
     
@@ -52,7 +55,7 @@ class RegisterViewController: UIViewController {
         field.leftView = UIView(frame: CGRect(x:0, y:0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
-        
+        field.attributedPlaceholder = NSAttributedString(string: "Last Name...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         return field
     }()
     
@@ -68,6 +71,7 @@ class RegisterViewController: UIViewController {
         field.leftView = UIView(frame: CGRect(x:0, y:0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.attributedPlaceholder = NSAttributedString(string: "Email Address...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         return field
     }()
     
@@ -84,6 +88,7 @@ class RegisterViewController: UIViewController {
         field.leftViewMode = .always
         field.backgroundColor = .white
         field.isSecureTextEntry = true
+        field.attributedPlaceholder = NSAttributedString(string: "Password...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         
         return field
     }()
@@ -135,7 +140,7 @@ class RegisterViewController: UIViewController {
     }
     
     @objc private func didTapChangeProfilePic(){
-        print("Change pic called")
+        presentPhotoActionSheet()
     }
     
     override func viewDidLayoutSubviews() {
@@ -144,9 +149,11 @@ class RegisterViewController: UIViewController {
         
         let size = scrollView.width/3
         imageView.frame = CGRect(x: (scrollView.width-size)/2,
-                                 y: 20,
+                                 y: 100,
                                  width: size,
                                  height: size)
+        
+        imageView.layer.cornerRadius = imageView.width/2.0
         
         firsNameField.frame = CGRect(x: 30,
                                   y: imageView.bottom+10,
@@ -221,3 +228,60 @@ extension RegisterViewController: UITextFieldDelegate{
         return true
     }
 }
+
+extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+    
+    func presentPhotoActionSheet(){
+        let actionSheet = UIAlertController(title: "Profile Picture",
+                                            message: "How would like to select a picture",
+                                            preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title:"Cancel",
+                                            style: .cancel,
+                                            handler: nil))
+        actionSheet.addAction(UIAlertAction(title:"Take Photo",
+                                            style: .default,
+                                            handler: {[weak self] _ in
+            self?.presentCamera()}))
+        actionSheet.addAction(UIAlertAction(title:"Chose Photo",
+                                            style: .default,
+                                            handler: {[weak self] _ in
+            self?.presentPhotoPicker()
+        }))
+            
+            present(actionSheet, animated: true)
+        }
+    
+    func presentCamera(){
+        let vc = UIImagePickerController()
+        vc.sourceType = .camera
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true)
+        
+    }
+
+    func presentPhotoPicker(){
+        let vc = UIImagePickerController()
+        vc.sourceType = .photoLibrary
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        print(info)
+        
+        guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
+            return
+        }
+        self.imageView.image = selectedImage
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+

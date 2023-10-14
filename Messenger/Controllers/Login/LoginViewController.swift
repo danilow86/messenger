@@ -18,6 +18,7 @@ class LoginViewController: UIViewController {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "logo")
+        //imageView.layer.contentsCenter  = CGRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5);
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -35,6 +36,7 @@ class LoginViewController: UIViewController {
         field.leftView = UIView(frame: CGRect(x:0, y:0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.attributedPlaceholder = NSAttributedString(string: "Email Address...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         
         return field
     }()
@@ -52,6 +54,7 @@ class LoginViewController: UIViewController {
         field.leftViewMode = .always
         field.backgroundColor = .white
         field.isSecureTextEntry = true
+        field.attributedPlaceholder = NSAttributedString(string: "Password...", attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray.withAlphaComponent(10.0)])
         
         return field
     }()
@@ -64,6 +67,16 @@ class LoginViewController: UIViewController {
         button.layer.cornerRadius = 12
         button.layer.masksToBounds = true
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        
+        // Add shadow properties
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowRadius = 4
+        
+        // Ensure that the button clips to its bounds, including the shadow
+        button.clipsToBounds = false
+        
         return button
     }()
     
@@ -72,7 +85,7 @@ class LoginViewController: UIViewController {
         title = "Log in"
         view.backgroundColor = .white
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Register", 
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Register",
                                                             style: .done,
                                                             target: self,
                                                             action: #selector(didTapRegister))
@@ -97,7 +110,7 @@ class LoginViewController: UIViewController {
         
         let size = scrollView.width/3
         imageView.frame = CGRect(x: (scrollView.width-size)/2,
-                                 y: 20,
+                                 y: 200,
                                  width: size,
                                  height: size)
         
@@ -106,13 +119,13 @@ class LoginViewController: UIViewController {
                                   width: scrollView.width-60,
                                   height: 52)
         passwordField.frame = CGRect(x: 30,
-                                  y: emailField.bottom+10,
-                                  width: scrollView.width-60,
-                                  height: 52)
+                                     y: emailField.bottom+10,
+                                     width: scrollView.width-60,
+                                     height: 52)
         loginButton.frame = CGRect(x: 30,
-                                  y: passwordField.bottom+10,
-                                  width: scrollView.width-60,
-                                  height: 52)
+                                   y: passwordField.bottom+10,
+                                   width: scrollView.width-60,
+                                   height: 52)
     }
     
     @objc private func loginButtonTapped(){
