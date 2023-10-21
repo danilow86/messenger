@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class RegisterViewController: UIViewController {
     private let scrollView: UIScrollView = {
@@ -196,8 +197,21 @@ class RegisterViewController: UIViewController {
             alertUserLoginError()
             return
         }
+        
+        //Firebase log in
+        
+        FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: {authResult,error in
+            guard let result = authResult, error == nil else {
+                print("Error creating user")
+                return
+            }
+            
+            let user = result.user
+            print("Created User: \(user)")
+        })
+        
     }
-    
+
     func alertUserLoginError(){
         let alert = UIAlertController(title: "Something wrong",
                                       message:"Please enter all information to create a new account",
